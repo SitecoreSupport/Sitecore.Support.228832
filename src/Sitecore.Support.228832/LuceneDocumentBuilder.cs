@@ -9,11 +9,16 @@ using System.Linq;
 
 namespace Sitecore.Support.ContentSearch.LuceneProvider
 {
-  public class LuceneDocumentBuilder: Sitecore.ContentSearch.LuceneProvider.LuceneDocumentBuilder
+  public class LuceneDocumentBuilder : Sitecore.ContentSearch.LuceneProvider.LuceneDocumentBuilder
   {
     public LuceneDocumentBuilder(IIndexable indexable, IProviderUpdateContext context)
               : base(indexable, context)
     {
+    }
+
+    protected virtual bool IsValidFieldForIndexing(IIndexableDataField field)
+    {
+      return (field != null) && !string.IsNullOrWhiteSpace(field.Name) && !string.IsNullOrWhiteSpace(field.TypeKey);
     }
 
     public override void AddItemFields()
@@ -66,7 +71,7 @@ namespace Sitecore.Support.ContentSearch.LuceneProvider
                 if (ID.TryParse(fieldId, out id))
                 {
                   var field = this.Indexable.GetFieldById(id);
-                  if (field != null)
+                  if (IsValidFieldForIndexing(field))
                   {
                     this.CheckAndAddField(this.Indexable, field);
                   }
@@ -94,7 +99,7 @@ namespace Sitecore.Support.ContentSearch.LuceneProvider
               if (ID.TryParse(fieldId, out id))
               {
                 var field = this.Indexable.GetFieldById(id);
-                if (field != null)
+                if (IsValidFieldForIndexing(field))
                 {
                   this.CheckAndAddField(this.Indexable, field);
                 }
